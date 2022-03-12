@@ -1,4 +1,4 @@
-# py ita_ocr.py -s vid1.mp4
+# py ita_ocr.py -v vid1.mp4 -d ./Frames
 
 '''
 https://github.com/UB-Mannheim/tesseract/wiki
@@ -21,22 +21,37 @@ import argparse
 import pytesseract
 import cv2
 
+# from statistics import mean, median
 
 def main():
     pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
 
     ap = argparse.ArgumentParser()
-    ap.add_argument("-s", "--source", required=True,
+    ap.add_argument("-v", "--video", required=True,
                     help="video to treat with OCR")
+    ap.add_argument("-d", "--destination", required=True,
+                    help="where to save frames")
     args = vars(ap.parse_args())
 
-    produce_frames(args["source"], "./Frames")
-    recognize_value("./Frames")
+    produce_frames(args["video"], args["destination"])
+    values = recognize_value(args["destination"])
+
+    print(f'\nTreated: {len(values)}')
+    print(f'Min: {min(values)}\tMax: {max(values)}')
+    # print(f'Mean: {mean(values)}\Median: {median(values)}')
 
 
 def produce_frames(src, dest):
     if not os.path.exists(dest):
         os.makedirs(dest)
+    else:
+        print("Chosen directory is not empty. Do you want to clear it? y/n")
+        u_input = input()
+        if (u_input == 'y'):
+            for f in os.listdir(dest):
+                os.remove(os.path.join(dest, f))
+        else:
+            exit()
 
     capture = cv2.VideoCapture(src)
 
@@ -48,17 +63,20 @@ def produce_frames(src, dest):
 
         if success:
             total += 1
-            if total % 5 == 0:
+            if total % 20 == 0:  # between 6 and 12 fps depending if 30/60 hz
+                frame = frame[200:300, 100:250]
                 cv2.imwrite(dest + f'/{frameNr:06d}.png', frame)
                 frameNr += 1
         else:
             break
 
+    print(f'Generated {frameNr} / {total}\n')
     capture.release()
 
 
 def recognize_value(path):
     frames = os.listdir(path)
+    values = []
 
     for frame in frames:
         image = cv2.imread(path + '/' + frame)
@@ -70,7 +88,10 @@ def recognize_value(path):
 
             if val > 0 and val < 20:
                 frameNr = re.findall(r'\d+', frame)[0]
-                print("{:.2f}".format(val))
+                values.append("{:.2f}".format(val))
+                print(f'{frameNr} : {"{:.2f}".format(val)}')
+
+    return values
 
 
 if __name__ == "__main__":
