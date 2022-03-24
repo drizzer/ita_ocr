@@ -1,4 +1,9 @@
-Frames/
+*.png
+*.jpg
+*.jpeg
+
 *.mp4
 
+
+.vscode/
 __pycache__/

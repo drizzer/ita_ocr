@@ -61,7 +61,7 @@ def recognize_value(path):
                 values.append("{:.2f}".format(val))
                 frameNr = re.findall(r'\d+', frame)[0]
                 frame_numbers.append(frameNr)
-                print(f'Frame N°{frameNr} : {values[-1]}')
+                print(f'Frame N°{frameNr} : {values[-1]} m/s')
 
     return values, frame_numbers
 

@@ -15,7 +15,7 @@ layout = [[sg.Text('Settings:')],
           [sg.Text('Path to video'), sg.InputText(), sg.FileBrowse(
               initial_folder='./', file_types=(("MP4", "*.mp4"), ("MOV", "*.mov"), ("FLV", "*.flv"), ("WMV", "*.wmv"), ("AVI", "*.avi")))],
           [sg.Text('Save frames under'), sg.InputText(), sg.FolderBrowse(
-              initial_folder='./Frames')],
+              initial_folder='./')],
           [sg.Text('Speed'), sg.Slider(range=(1, 60),
                                        default_value=5,
                                        size=(30, 15),
